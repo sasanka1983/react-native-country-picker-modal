@@ -9,7 +9,10 @@ import {
 } from 'react-native'
 import { CountryModal } from './CountryModal'
 import { HeaderModal } from './HeaderModal'
-import { Country, CountryCode, FlagType, Region, Subregion } from './types'
+import { Country,
+   CountryCode, 
+   // FlagType,
+    Region, Subregion } from './types'
 import { CountryFilter, CountryFilterProps } from './CountryFilter'
 import { FlagButton } from './FlagButton'
 import { useContext } from './CountryContext'
@@ -158,7 +161,7 @@ export const CountryPicker = (props: CountryPickerProps) => {
 
   useEffect(() => {
     getCountriesAsync(
-      withEmoji ? FlagType.EMOJI : FlagType.FLAT,
+      // withEmoji ? FlagType.EMOJI : FlagType.FLAT,
       translation,
       region,
       subregion,

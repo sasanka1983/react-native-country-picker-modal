@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const countries = require('world-countries')
 const flags = require('./countryFlags')
 
@@ -28,6 +26,7 @@ const newcountries = countries
       callingCode,
       region,
       subregion,
+      demonym,
       name: { common },
       translations
     }) => ({
@@ -36,6 +35,7 @@ const newcountries = countries
         callingCode,
         region,
         subregion,
+        demonym,
         flag: isEmoji ? `flag-${cca2.toLowerCase()}` : flags[cca2],
         name: { common, ...getCountryNameAsyncs(common, translations) }
       }

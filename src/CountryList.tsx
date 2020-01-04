@@ -130,7 +130,7 @@ const CountryItem = (props: CountryItemProps) => {
             numberOfLines={2}
             ellipsizeMode='tail'
           >
-            {country.name}
+            {country.demonym}
             {extraContent.length > 0 && ` (${extraContent.join(', ')})`}
           </CountryText>
         </View>
@@ -192,7 +192,7 @@ export const CountryList = (props: CountryListProps) => {
   const [letter, setLetter] = useState<string>('')
   const { itemHeight, backgroundColor } = useTheme()
   const indexLetter = data
-    .map((country: Country) => (country.name as string).substr(0, 1))
+    .map((country: Country) => (country.demonym as string).substr(0, 1))
     .join('')
 
   const scrollTo = (letter: string, animated: boolean = true) => {

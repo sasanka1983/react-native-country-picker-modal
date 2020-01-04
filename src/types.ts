@@ -268,6 +268,7 @@ export interface Country {
   flag: string
   name: TranslationLanguageCodeMap | string
   cca2: CountryCode
+  demonym: string
 }
 export const RegionList = [
   'Africa',

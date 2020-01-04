@@ -3,15 +3,16 @@ import {
   Country,
   TranslationLanguageCode,
   TranslationLanguageCodeMap,
-  FlagType,
+  // FlagType,
   CountryCodeList,
   Region,
   Subregion,
 } from './types'
+
 import Fuse from 'fuse.js'
 
-const imageJsonUrl =
-  'https://xcarpentier.github.io/react-native-country-picker-modal/countries/'
+// const imageJsonUrl =
+// 'https://xcarpentier.github.io/react-native-country-picker-modal/countries/'
 
 type CountryMap = { [key in CountryCode]: Country }
 
@@ -25,32 +26,37 @@ const localData: DataCountry = {
 }
 
 export const loadDataAsync = ((data: DataCountry) => (
-  dataType: FlagType = FlagType.EMOJI,
+ // dataType: FlagType = FlagType.EMOJI,
 ): Promise<CountryMap> => {
-  return new Promise((resolve, reject) => {
-    switch (dataType) {
-      case FlagType.FLAT:
-        if (!data.imageCountries) {
-          fetch(imageJsonUrl)
-            .then((response: Response) => response.json())
-            .then((remoteData: any) => {
-              data.imageCountries = remoteData
-              resolve(data.imageCountries)
-            })
-            .catch(reject)
-        } else {
-          resolve(data.imageCountries)
-        }
-        break
-      default:
-        if (!data.emojiCountries) {
-          data.emojiCountries = require('./assets/data/countries-emoji.json')
-          resolve(data.emojiCountries)
-        } else {
-          resolve(data.emojiCountries)
-        }
-        break
-    }
+  return new Promise((resolve) => {
+
+    data.emojiCountries = require('./assets/data/countriesList-emoji.json')
+    resolve(data.emojiCountries)
+    
+    // switch (dataType) {
+    //   case FlagType.FLAT:
+        
+    //     if (!data.imageCountries) {
+    //       fetch(imageJsonUrl)
+    //         .then((response: Response) => response.json())
+    //         .then((remoteData: any) => {
+    //           data.imageCountries = remoteData
+    //           resolve(data.imageCountries)
+    //         })
+    //         .catch(reject)
+    //     } else {
+    //       resolve(data.imageCountries)
+    //     }
+    //     break
+    //   default:
+    //     if (!data.emojiCountries) {
+    //       data.emojiCountries = require('./assets/data/countries-emoji.json')
+    //       resolve(data.emojiCountries)
+    //     } else {
+    //       resolve(data.emojiCountries)
+    //     }
+    //     break
+    // }
   })
 })(localData)
 
@@ -63,7 +69,8 @@ export const getEmojiFlagAsync = async (countryCode: CountryCode = 'FR') => {
 }
 
 export const getImageFlagAsync = async (countryCode: CountryCode = 'FR') => {
-  const countries = await loadDataAsync(FlagType.FLAT)
+  // parameter FlagType.FLAT should be passed here ideally
+  const countries = await loadDataAsync()
   if (!countries) {
     throw new Error('Unable to find image because imageCountries is undefined')
   }
@@ -71,17 +78,19 @@ export const getImageFlagAsync = async (countryCode: CountryCode = 'FR') => {
 }
 
 export const getCountryNameAsync = async (
-  countryCode: CountryCode = 'FR',
-  translation: TranslationLanguageCode = 'common',
+  countryCode: CountryCode = 'FR'
+  // translation: TranslationLanguageCode = 'common',
 ) => {
   const countries = await loadDataAsync()
   if (!countries) {
     throw new Error('Unable to find image because imageCountries is undefined')
   }
 
-  return countries[countryCode].name
-    ? (countries[countryCode].name as TranslationLanguageCodeMap)[translation]
-    : (countries[countryCode].name as TranslationLanguageCodeMap)['common']
+  // return countries[countryCode].name
+  //   ? (countries[countryCode].name as TranslationLanguageCodeMap)[translation]
+  //   : (countries[countryCode].name as TranslationLanguageCodeMap)['common']
+
+  return countries[countryCode].demonym
 }
 
 export const getCountryCallingCodeAsync = async (countryCode: CountryCode) => {
@@ -121,17 +130,19 @@ const isExcluded = (excludeCountries?: CountryCode[]) => (country: Country) =>
     : true
 
 export const getCountriesAsync = async (
-  flagType: FlagType,
+  // flagType: FlagType,
   translation: TranslationLanguageCode = 'common',
   region?: Region,
   subregion?: Subregion,
   countryCodes?: CountryCode[],
   excludeCountries?: CountryCode[],
 ): Promise<Country[]> => {
-  const countriesRaw = await loadDataAsync(flagType)
+  // for demonym we should pass Emoji since https://xcarpentier.github.io/react-native-country-picker-modal/countries/ is not sending demonym
+  const countriesRaw = await loadDataAsync()
   if (!countriesRaw) {
     return []
   }
+// console.log(countriesRaw.AF);
   const countries = CountryCodeList.filter(isCountryPresent(countriesRaw))
     .map((cca2: CountryCode) => ({
       cca2,
@@ -142,6 +153,7 @@ export const getCountriesAsync = async (
             translation
           ] ||
           (countriesRaw[cca2].name as TranslationLanguageCodeMap)['common'],
+          
       },
     }))
     .filter(isRegion(region))
@@ -149,9 +161,9 @@ export const getCountriesAsync = async (
     .filter(isIncluded(countryCodes))
     .filter(isExcluded(excludeCountries))
     .sort((country1: Country, country2: Country) =>
-      (country1.name as string).localeCompare(country2.name as string),
+      (country1.demonym as string).localeCompare(country2.demonym as string),
     )
-
+ // console.log(countries);
   return countries
 }
 
@@ -189,7 +201,7 @@ export const getLetters = (countries: Country[]) => {
   return uniq(
     countries
       .map((country: Country) =>
-        (country.name as string).substr(0, 1).toLocaleUpperCase(),
+        (country.demonym as string).substr(0, 1).toLocaleUpperCase(),
       )
       .sort((l1: string, l2: string) => l1.localeCompare(l2)),
   )
@@ -201,15 +213,15 @@ export interface CountryInfo {
   callingCode: string
 }
 export const getCountryInfoAsync = async ({
-  countryCode,
-  translation,
+  countryCode
+  // translation,
 }: {
   countryCode: CountryCode
-  translation?: TranslationLanguageCode
+  // translation?: TranslationLanguageCode
 }): Promise<CountryInfo> => {
   const countryName = await getCountryNameAsync(
-    countryCode,
-    translation || 'common',
+    countryCode
+    // translation || 'common',
   )
   const currency = await getCountryCurrencyAsync(countryCode)
   const callingCode = await getCountryCallingCodeAsync(countryCode)

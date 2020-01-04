@@ -58,7 +58,7 @@ const FlagWithSomething = memo(
     flagSize,
     placeholder,
   }: FlagWithSomethingProp) => {
-    const { translation, getCountryInfoAsync } = useContext()
+    const { getCountryInfoAsync } = useContext()
     const [state, setState] = useState({
       countryName: '',
       currency: '',
@@ -67,7 +67,7 @@ const FlagWithSomething = memo(
     const { countryName, currency, callingCode } = state
     useEffect(() => {
       if (countryCode) {
-        getCountryInfoAsync({ countryCode, translation })
+        getCountryInfoAsync({ countryCode })
           .then(setState)
           .catch(console.warn)
       }
